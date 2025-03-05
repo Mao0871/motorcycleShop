@@ -1,7 +1,5 @@
 <?php
 // models/Product.php
-// 产品模型包含获取所有产品、按ID查询、更新、删除和创建产品的功能
-// 图片上传后，数据库仅保存图片的 URL
 require_once __DIR__ . '/../config.php';
 
 class Product {
@@ -13,6 +11,22 @@ class Product {
         while($row = $result->fetch_assoc()){
             $products[] = $row;
         }
+        $conn->close();
+        return $products;
+    }
+
+    // 根据类别ID获取产品数据
+    public static function getProductsByCategory($category_id) {
+        $conn = getDBConnection();
+        $stmt = $conn->prepare("SELECT * FROM products WHERE category_id = ?");
+        $stmt->bind_param("i", $category_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $products = array();
+        while($row = $result->fetch_assoc()){
+            $products[] = $row;
+        }
+        $stmt->close();
         $conn->close();
         return $products;
     }

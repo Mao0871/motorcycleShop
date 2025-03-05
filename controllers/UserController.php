@@ -1,6 +1,6 @@
 <?php
 // controllers/UserController.php
-//此界面用户注册登陆相关
+// 此界面用户注册登陆相关
 session_start();
 require_once __DIR__ . '/../models/User.php';
 
@@ -50,8 +50,8 @@ switch($action) {
                     // 如果是管理员，跳转到后台管理首页
                     header("Location: ../controllers/AdminController.php?action=dashboard");
                 } else {
-                    // 如果是普通用户，跳转到前台用户中心
-                    header("Location: ../views/dashboard.php");
+                    // 如果是普通用户，跳转到前台商店首页（CustomerController）
+                    header("Location: ../controllers/CustomerController.php?action=home");
                 }
                 exit();
             } else {
@@ -62,7 +62,6 @@ switch($action) {
             include __DIR__ . '/../views/login.php';
         }   
         break;
-
         
     // 退出登录操作
     case 'logout':

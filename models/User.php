@@ -1,6 +1,5 @@
 <?php
 // models/User.php
-//注册与登录方法外，后台管理需要的获取所有用户、按ID查询、更新（不修改密码）和删除的功能。
 require_once __DIR__ . '/../config.php';
 
 class User {
@@ -55,7 +54,7 @@ class User {
         return $users;
     }
 
-    // 通过用户ID获取用户信息
+    // 根据用户ID获取用户信息
     public static function getUserById($user_id) {
         $conn = getDBConnection();
         $stmt = $conn->prepare("SELECT user_id, nickname, email, user_type FROM users WHERE user_id = ?");
@@ -73,6 +72,18 @@ class User {
         $conn = getDBConnection();
         $stmt = $conn->prepare("UPDATE users SET nickname = ?, email = ?, user_type = ? WHERE user_id = ?");
         $stmt->bind_param("sssi", $nickname, $email, $user_type, $user_id);
+        $result = $stmt->execute();
+        $stmt->close();
+        $conn->close();
+        return $result;
+    }
+
+    // 更新用户密码
+    public static function updatePassword($user_id, $new_password) {
+        $conn = getDBConnection();
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+        $stmt = $conn->prepare("UPDATE users SET password = ? WHERE user_id = ?");
+        $stmt->bind_param("si", $hashed_password, $user_id);
         $result = $stmt->execute();
         $stmt->close();
         $conn->close();
