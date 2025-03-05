@@ -1,5 +1,6 @@
 <?php
 // controllers/UserController.php
+//此界面用户注册登陆相关
 session_start();
 require_once __DIR__ . '/../models/User.php';
 
@@ -40,12 +41,18 @@ switch($action) {
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email    = trim($_POST['email']);
             $password = $_POST['password'];
-            
+        
             $user = User::login($email, $password);
             if($user) {
                 $_SESSION['user'] = $user;
-                // 登录成功后，根据用户类型跳转到对应的用户中心页面
-                header("Location: ../views/dashboard.php");
+                // 根据用户类型决定跳转路径
+                if($user['user_type'] == 'admin'){
+                    // 如果是管理员，跳转到后台管理首页
+                    header("Location: ../controllers/AdminController.php?action=dashboard");
+                } else {
+                    // 如果是普通用户，跳转到前台用户中心
+                    header("Location: ../views/dashboard.php");
+                }
                 exit();
             } else {
                 $error = "登录失败，请检查邮箱和密码。";
@@ -53,8 +60,9 @@ switch($action) {
             }
         } else {
             include __DIR__ . '/../views/login.php';
-        }
+        }   
         break;
+
         
     // 退出登录操作
     case 'logout':

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- 前台注册页面 -->
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
