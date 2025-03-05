@@ -183,6 +183,33 @@ switch($action) {
         }
         break;
 
+    case 'delete_category':
+        $category_id = $_GET['id'];
+        // 先检查该类别是否被产品引用
+        $conn = getDBConnection();
+        $stmt = $conn->prepare("SELECT COUNT(*) AS count FROM products WHERE category_id = ?");
+        $stmt->bind_param("i", $category_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        $conn->close();
+            
+        if ($row['count'] > 0) {
+            // 如果存在关联产品，则不允许删除
+            echo "<script>alert('无法删除该类别，因为存在相关产品。');window.location.href='../controllers/AdminController.php?action=categories';</script>";
+            exit();
+        }
+            
+            // 如果没有关联产品，则调用删除操作
+        $result = Category::deleteCategory($category_id);
+        if($result){
+            echo "<script>alert('类别删除成功');window.location.href='../controllers/AdminController.php?action=categories';</script>";
+        } else {
+            echo "<script>alert('删除失败');window.location.href='../controllers/AdminController.php?action=categories';</script>";
+        }
+        break;
+        
     case 'create_category':
         include __DIR__ . '/../views/admin/create_category.php';
         break;
