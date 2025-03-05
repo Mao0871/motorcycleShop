@@ -64,6 +64,8 @@ if(!isset($_SESSION['user']) || $_SESSION['user']['user_type'] != 'admin') {
             <a href="../controllers/AdminController.php?action=users">用户管理</a>
             <a href="../controllers/AdminController.php?action=products">商品管理</a>
             <a href="../controllers/AdminController.php?action=categories">类别管理</a>
+            <a href="../controllers/AdminController.php?action=orders">订单管理</a>
+            <a href="../controllers/AdminController.php?action=stock_report">库存报告</a>
             <!-- 预留其他管理选项 -->
             <a href="../controllers/UserController.php?action=logout" class="logout-btn">退出</a>
         </div>

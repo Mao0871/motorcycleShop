@@ -28,7 +28,7 @@ if(!isset($_SESSION['user'])) {
         <a href="../controllers/CustomerController.php?action=home">首页</a>
         <a href="../controllers/CustomerController.php?action=personal_info">个人信息管理</a>
         <a href="../controllers/CustomerController.php?action=cart" class="reserved">购物车</a>
-        <a href="#" class="reserved">订单</a>
+        <a href="../controllers/CustomerController.php?action=order_list" class="reserved">订单</a>
         <a href="../controllers/UserController.php?action=logout" class="logout-btn">退出</a>
     </div>
     <div class="container">

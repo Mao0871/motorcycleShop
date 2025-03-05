@@ -1,0 +1,66 @@
+-- 用户表：存储所有用户信息，包括普通用户和管理员（不包含注册时间）
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,          -- 用户主键，自增长
+    nickname VARCHAR(50) NOT NULL,                     -- 用户昵称
+    email VARCHAR(100) NOT NULL UNIQUE,                -- 电子邮箱，唯一索引
+    password VARCHAR(255) NOT NULL,                    -- 加密后的密码
+    user_type ENUM('admin', 'customer') NOT NULL DEFAULT 'customer' -- 用户类型：admin表示管理员，customer表示普通用户
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 分类表：用于对摩托车进行分类管理（不包含创建时间）
+CREATE TABLE categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,      -- 分类主键，自增长
+    category_name VARCHAR(100) NOT NULL,               -- 分类名称
+    description TEXT                                 -- 分类描述（可选）
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 产品表：存储摩托车详细信息
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,       -- 产品主键，自增长
+    model VARCHAR(100) NOT NULL,                       -- 摩托车型号
+    category_id INT,                                   -- 分类ID，关联到categories表
+    type VARCHAR(50),                                  -- 摩托车类型
+    image_url VARCHAR(255),                            -- 图片路径或URL
+    price DECIMAL(10,2) NOT NULL,                      -- 价格
+    engine_power VARCHAR(50),                          -- 动力参数
+    description TEXT,                                  -- 摩托车简介
+    stock INT NOT NULL DEFAULT 0,                      -- 库存数量
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,     -- 创建时间
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 更新时间
+    CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES categories(category_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 订单表：存储订单基本信息，每个订单属于一个用户，并记录信用卡信息（卡号、CCV、过期时间）
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,         -- 订单主键，自增长
+    user_id INT NOT NULL,                              -- 用户ID，关联到users表
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,     -- 下单时间
+    order_status ENUM('Pending confirmation', 'Payment successful', 'Vehicle in preparation', 'Vehicle ready') DEFAULT 'Pending confirmation', -- 订单状态
+    total_amount DECIMAL(10,2) NOT NULL,               -- 订单总金额
+    card_number VARCHAR(20) NOT NULL,                  -- 信用卡卡号
+    card_ccv VARCHAR(4) NOT NULL,                      -- 信用卡CCV码
+    card_expiration VARCHAR(7) NOT NULL,               -- 信用卡过期时间，格式例如 MM/YYYY
+    CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 订单详情表：记录订单内包含的摩托车（实现一订单多产品的关系）
+CREATE TABLE order_items (
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,    -- 订单详情主键，自增长
+    order_id INT NOT NULL,                             -- 订单ID，关联到orders表
+    product_id INT NOT NULL,                           -- 产品ID，关联到products表
+    quantity INT NOT NULL DEFAULT 1,                   -- 购买数量
+    price DECIMAL(10,2) NOT NULL,                      -- 下单时的单价
+    CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
+    CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(product_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 购物车表：存储用户购物车中添加的摩托车信息
+CREATE TABLE cart_items (
+    cart_item_id INT AUTO_INCREMENT PRIMARY KEY,     -- 购物车项主键，自增长
+    user_id INT NOT NULL,                              -- 用户ID，关联到users表
+    product_id INT NOT NULL,                           -- 产品ID，关联到products表
+    quantity INT NOT NULL DEFAULT 1,                   -- 购物车中该产品数量
+    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,       -- 添加到购物车的时间
+    CONSTRAINT fk_cart_items_user FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT fk_cart_items_product FOREIGN KEY (product_id) REFERENCES products(product_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

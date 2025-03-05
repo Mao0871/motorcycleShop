@@ -225,6 +225,60 @@ switch($action) {
             }
         }
         break;
+
+    //订单管理
+    case 'orders':
+        require_once __DIR__ . '/../models/Order.php';
+        $orders = Order::getAllOrders();
+        include __DIR__ . '/../views/admin/orders.php';
+        break;
+    // 新增：编辑订单状态及查看订单详情
+    case 'edit_order':
+        if(isset($_GET['id'])){
+            require_once __DIR__ . '/../models/Order.php';
+            $order_id = intval($_GET['id']);
+            $order = Order::getOrderById($order_id);
+            $order_items = Order::getOrderItems($order_id);
+            include __DIR__ . '/../views/admin/edit_order.php';
+        }
+        break;
+    // 新增：更新订单状态
+    case 'update_order_status':
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            require_once __DIR__ . '/../models/Order.php';
+            $order_id = intval($_POST['order_id']);
+            $order_status = $_POST['order_status'];
+            $result = Order::updateOrderStatus($order_id, $order_status);
+            if($result){
+                echo "<script>alert('订单状态更新成功');window.location.href='../controllers/AdminController.php?action=orders';</script>";
+            } else {
+                echo "<script>alert('更新失败');window.location.href='../controllers/AdminController.php?action=orders';</script>";
+            }
+        }
+        break;
+    // 新增：删除订单
+    case 'delete_order':
+        if(isset($_GET['id'])){
+            require_once __DIR__ . '/../models/Order.php';
+            $order_id = intval($_GET['id']);
+            $result = Order::deleteOrder($order_id);
+            if($result){
+                echo "<script>alert('订单删除成功');window.location.href='../controllers/AdminController.php?action=orders';</script>";
+            } else {
+                echo "<script>alert('删除失败');window.location.href='../controllers/AdminController.php?action=orders';</script>";
+            }
+        }
+        break;
+
+    //库存报告
+    
+    // 新增：库存报告
+    case 'stock_report':
+        $products = Product::getAllProducts();
+        include __DIR__ . '/../views/admin/stock_report.php';
+        break;
+
+    
     default:
         include __DIR__ . '/../views/admin/dashboard.php';
         break;

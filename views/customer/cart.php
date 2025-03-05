@@ -41,7 +41,7 @@
         </table>
         <p style="margin-top: 10px;">
             <button type="submit" style="padding: 8px 16px; background-color: #2980b9; color: #fff; border: none; border-radius: 3px; cursor: pointer;">更新购物车</button>
-            <button type="button" style="padding: 8px 16px; background-color: #27ae60; color: #fff; border: none; border-radius: 3px; cursor: pointer; margin-left: 10px;">去结算</button>
+            <a href="../controllers/CustomerController.php?action=checkout" style="padding: 8px 16px; background-color: #27ae60; color: #fff; border: none; border-radius: 3px; cursor: pointer; margin-left: 10px; text-decoration: none;">去结算</a>
         </p>
     </form>
 <?php endif; ?>
